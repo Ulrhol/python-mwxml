@@ -4,9 +4,9 @@ import mwtypes
 
 from ..errors import MalformedXML
 from .revision import Revision
+from .upload import Upload
 
 logger = logging.getLogger(__name__)
-
 
 class Page(mwtypes.Page):
     """
@@ -22,11 +22,12 @@ class Page(mwtypes.Page):
             for revision in page:
                 print("{0} {1}".format(revision.id, page.id))
     """
-    def initialize(self, *args, revisions=None, **kwargs):
+    def initialize(self, *args, revisions=None, uploads=None, **kwargs):
         super().initialize(*args, **kwargs)
 
         # Should be a lazy generator
         self.__revisions = revisions
+        self.__uploads = []
 
     def __iter__(self):
         for revision in self.__revisions:
@@ -46,11 +47,14 @@ class Page(mwtypes.Page):
         for sub_element in element:
             tag = sub_element.tag
 
-            if tag == "revision":
+            if tag == "upload":
+                yield Upload.from_element(sub_element)
+            elif tag == "revision":
                 yield Revision.from_element(sub_element)
             else:
                 raise MalformedXML("Expected to see <revision>.  " +
                                    "Instead saw <{0}>".format(tag))
+
 
     @classmethod
     def from_element(cls, element, namespace_map=None):
@@ -59,6 +63,7 @@ class Page(mwtypes.Page):
         id = None
         redirect = None
         restrictions = []
+        uploads = []
 
         first_revision = None
 
@@ -79,6 +84,7 @@ class Page(mwtypes.Page):
             elif tag == "revision":
                 first_revision = sub_element
                 break
+
             # Assuming that the first revision seen marks the end of page
             # metadata.  I'm not too keen on this assumption, so I'm leaving
             # this long comment to warn whoever ends up maintaining this.
@@ -105,7 +111,7 @@ class Page(mwtypes.Page):
 
         # Construct class
         return cls(id, title, namespace, redirect=redirect,
-                   restrictions=restrictions, revisions=revisions)
+                   restrictions=restrictions, revisions=revisions, uploads=uploads)
 
 
 def normalize_title(title):

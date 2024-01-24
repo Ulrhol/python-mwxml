@@ -26,10 +26,10 @@ XML parsing.
 
 """
 from .map import map
-from .iteration import Dump, Page, LogItem, Revision, SiteInfo, Namespace
+from .iteration import Dump, Page, LogItem, Revision, SiteInfo, Namespace, Upload
 from .about import (__name__, __version__, __author__, __author_email__,
                     __description__, __license__, __url__)
 
-__all__ = [map, Dump, Page, LogItem, Revision, SiteInfo, Namespace,
+__all__ = [map, Dump, Page, LogItem, Revision, SiteInfo, Namespace, Upload,
            __name__, __version__, __author__, __author_email__,
            __description__, __license__, __url__]

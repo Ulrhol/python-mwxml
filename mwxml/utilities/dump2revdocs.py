@@ -45,6 +45,13 @@ def dump2revdocs(dump, verbose=False):
                 sys.stderr.write(".")
                 sys.stderr.flush()
 
+        for upload in page:
+            yield upload.to_json()
+
+            if verbose:
+                sys.stderr.write(".")
+                sys.stderr.flush()
+
         if verbose:
             sys.stderr.write("\n")
             sys.stderr.flush()
